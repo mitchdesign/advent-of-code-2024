@@ -13,6 +13,8 @@ class RunDayCommand extends Command
 
     public function handle()
     {
+		$start = microtime(true);
+
 		$day = $this->argument('day');
 
 		$puzzle = $this->argument('puzzle');
@@ -37,5 +39,9 @@ class RunDayCommand extends Command
 		if ($puzzles->contains(2)) {
 			$this->line("Day {$day->getDay()}, puzzle 2: " . $day->solve2($input));
 		}
+
+		$end = microtime(true);
+
+		$this->line('Finished in ' . round($end - $start, 3) . ' seconds');
     }
 }
