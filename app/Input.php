@@ -34,4 +34,9 @@ class Input {
 	public function asString(): string {
 		return $this->input;
 	}
+
+	public function asTwoDimensionalArray(): array {
+		$lines = $this->linesAsArray();
+		return array_map(static fn(string $line): array => str_split($line, 1), $lines);
+	}
 }
