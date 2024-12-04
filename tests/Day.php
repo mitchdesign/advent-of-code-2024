@@ -14,7 +14,7 @@ abstract class Day extends TestCase
 		$this->dayClass = "App\Days\Day{$this->day}";
 	}
 
-	abstract function input(): string;
+	abstract function input(?int $puzzle): string;
 	abstract function answer1(): int;
 	abstract function answer2(): int;
 
@@ -22,7 +22,7 @@ abstract class Day extends TestCase
     {
 	    $this->assertEquals(
 			$this->answer1(),
-		    (new $this->dayClass)->solve1(new Input($this->input()))
+		    (new $this->dayClass)->solve1(new Input($this->input(1)))
 	    );
     }
 
@@ -30,7 +30,7 @@ abstract class Day extends TestCase
 	{
 		$this->assertEquals(
 			$this->answer2(),
-			(new $this->dayClass)->solve2(new Input($this->input()))
+			(new $this->dayClass)->solve2(new Input($this->input(2)))
 		);
 	}
 }

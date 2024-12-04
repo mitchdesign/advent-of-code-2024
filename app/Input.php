@@ -30,4 +30,8 @@ class Input {
 	public function linesAsCollection(): Collection {
 		return collect($this->linesAsArray());
 	}
+
+	public function asString(): string {
+		return $this->input;
+	}
 }

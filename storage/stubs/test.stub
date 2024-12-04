@@ -4,7 +4,7 @@ namespace Tests;
 
 class Day##DAY##Test extends Day {
 
-	function input() : string {
+	function input(?int $puzzle) : string {
 		return 'Place day ##DAY## test input here.';
 	}
 
