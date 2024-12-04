@@ -3,21 +3,20 @@
 namespace App\Days;
 
 use App\Input;
-use Illuminate\Support\Collection;
 
 class Day3 extends Day {
 
-	public function solve1(Input $input) : int {
+	public function solve1(Input $input): int
+	{
 		preg_match_all('#mul\(\d+,\d+\)#', $input->asString(), $matches);
 
 		return collect($matches[0])
-			->map(static function (string $combo): int {
-				preg_match_all('#mul\((\d+),(\d+)\)#', $combo, $matches);
-				return $matches[1][0] * $matches[2][0];
-			})->sum();
+			->map(static fn (string $combo): int => self::getProductOfMulExpression($combo))
+			->sum();
 	}
 
-	public function solve2(Input $input) : int {
+	public function solve2(Input $input): int
+	{
 		preg_match_all('#mul\(\d+,\d+\)|do\(\)|don\'t\(\)#', $input->asString(), $matches);
 
 		$take = true;
@@ -33,12 +32,17 @@ class Day3 extends Day {
 					break;
 				default:
 					if ($take) {
-						preg_match_all('#mul\((\d+),(\d+)\)#', $match, $combomatch);
-						$total += $combomatch[1][0] * $combomatch[2][0];
+						$total += self::getProductOfMulExpression($match);
 					}
 			}
 		}
 
 		return $total;
+	}
+
+	protected static function getProductOfMulExpression(string $mul): int
+	{
+		preg_match_all('#mul\((\d+),(\d+)\)#', $mul, $matches);
+		return $matches[1][0] * $matches[2][0];
 	}
 }
