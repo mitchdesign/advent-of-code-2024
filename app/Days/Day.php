@@ -8,11 +8,13 @@ abstract class Day {
 
 	private int $day;
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->day = (int) preg_replace('#.*Day#', '', get_class($this));
 	}
 
-	public function getDay(): int {
+	public function getDay(): int
+	{
 		return $this->day;
 	}
 

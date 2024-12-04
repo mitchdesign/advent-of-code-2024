@@ -18,7 +18,7 @@ abstract class Day extends TestCase
 	abstract function answer1(): int;
 	abstract function answer2(): int;
 
-	public function test_solve1(): void
+	public function test_puzzle_1(): void
     {
 	    $this->assertEquals(
 			$this->answer1(),
@@ -26,7 +26,7 @@ abstract class Day extends TestCase
 	    );
     }
 
-	public function test_solve2(): void
+	public function test_puzzle_2(): void
 	{
 		$this->assertEquals(
 			$this->answer2(),
