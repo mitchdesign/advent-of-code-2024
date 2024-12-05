@@ -6,11 +6,13 @@ use App\Input;
 
 class Day##DAY## extends Day {
 
-	public function solve1(Input $input) : int {
+	public function solve1(Input $input): int
+	{
 		return 0;
 	}
 
-	public function solve2(Input $input) : int {
+	public function solve2(Input $input): int
+	{
 		return 0;
 	}
 }
