@@ -39,4 +39,16 @@ class Input {
 		$lines = $this->linesAsArray();
 		return array_map(static fn(string $line): array => str_split($line, 1), $lines);
 	}
+
+	public function asCoordinateKeyedArray(): array {
+		$array = [];
+
+		foreach ($this->linesAsCollection() as $y => $line) {
+			for ($x = 0; $x < strlen($line); $x++) {
+				$array["{$x}.{$y}"] = substr($line, $x, 1);
+			}
+		}
+
+		return $array;
+	}
 }
