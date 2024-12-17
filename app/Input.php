@@ -35,17 +35,27 @@ class Input {
 		return $this->input;
 	}
 
-	public function asTwoDimensionalArray(): array {
+	public function asTwoDimensionalArray(bool $ints = false): array {
 		$lines = $this->linesAsArray();
-		return array_map(static fn(string $line): array => str_split($line, 1), $lines);
+		return array_map(
+            static function(string $line) use ($ints): array {
+                $vals = str_split($line, 1);
+                if ($ints) {
+                    $vals = array_map('intval', $vals);
+                }
+                return $vals;
+            },
+            $lines
+        );
 	}
 
-	public function asCoordinateKeyedArray(): array {
+	public function asCoordinateKeyedArray(bool $ints = false): array {
 		$array = [];
 
 		foreach ($this->linesAsCollection() as $y => $line) {
 			for ($x = 0; $x < strlen($line); $x++) {
-				$array["{$x}.{$y}"] = substr($line, $x, 1);
+                $str = substr($line, $x, 1);
+				$array["{$x}.{$y}"] = $ints ? (int) $str : $str;
 			}
 		}
 
