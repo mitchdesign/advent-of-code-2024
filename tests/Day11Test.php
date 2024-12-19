@@ -13,9 +13,4 @@ class Day11Test extends Day {
 	{
 		return 55312;
 	}
-
-	function answer2(): int
-	{
-		return 2;
-	}
 }

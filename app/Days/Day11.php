@@ -6,51 +6,36 @@ use App\Input;
 
 class Day11 extends Day {
 
-    public \SplQueue $queue;
-    public int $totalCount = 0;
-
-	public function solve1(Input $input): int
+    public function solve1(Input $input): int
 	{
-        $this->queue = new \SplQueue();
-
-        foreach (explode(' ', $input->asString()) as $stone) {
-            $this->queue->enqueue([(int) $stone, 0]);
-        }
-
-        $this->runQueue(25);
-
-        return $this->totalCount;
+        return $this->solve($input, 25);
 	}
 
-	public function solve2(Input $input): int
-	{
-        $this->queue = new \SplQueue();
-
-        foreach (explode(' ', $input->asString()) as $stone) {
-            $this->queue->push([(int) $stone, 0]);
-        }
-
-        $this->runQueue(75);
-
-        return $this->totalCount;
-	}
-
-    protected function runQueue(int $iterations): void
+    public function solve2(Input $input): int
     {
-        while (! $this->queue->isEmpty()) {
-            [$stone, $count] = $this->queue->pop();
+        return $this->solve($input, 75);
+    }
 
-            if ($count == $iterations) {
-                $this->totalCount++;
-            } else {
-                $count++;
+	public function solve(Input $input, int $iterations): int
+	{
+        $stones = [];
 
-                foreach (self::handleStone($stone) as $stone) {
-                    $this->queue->push([$stone, $count]);
+        foreach (explode(' ', $input->asString()) as $stone) {
+            $stones[$stone] = ($stones[$stone] ?? 0) + 1;
+        }
+
+        for ($i = 1; $i <= $iterations; $i++) {
+            $newStones = [];
+            foreach ($stones as $stone => $count) {
+                foreach (self::handleStone($stone) as $handled) {
+                    $newStones[$handled] = ($newStones[$handled] ?? 0) + $count;
                 }
             }
+            $stones = $newStones;
         }
-    }
+
+        return array_sum($stones);
+	}
 
     protected static function handleStone(int $stone): array {
         if ($stone === 0) {
