@@ -4,10 +4,9 @@ namespace Tests;
 
 class Day16Test extends Day {
 
-	function input(?int $puzzle): string|array
-	{
-		return [
-'###############
+    function input(?int $puzzle) : string|array {
+        return [
+            '###############
 #.......#....E#
 #.#.###.#.###.#
 #.....#.#...#.#
@@ -22,7 +21,7 @@ class Day16Test extends Day {
 #.###.#.#.#.#.#
 #S..#.....#...#
 ###############',
-'#################
+            '#################
 #...#...#...#..E#
 #.#.#.#.#.#.#.#.#
 #.#.#.#...#...#.#
@@ -38,17 +37,15 @@ class Day16Test extends Day {
 #.#.#.........#.#
 #.#.#.#########.#
 #S#.............#
-#################'
+#################',
         ];
-	}
+    }
 
-	function answer1(): int|array
-	{
-		return [7036, 11048];
-	}
+    function answer1() : int|array {
+        return [7036, 11048];
+    }
 
-	function answer2(): int
-	{
-		return 2;
-	}
+    function answer2() : int|array {
+        return [45, 64];
+    }
 }

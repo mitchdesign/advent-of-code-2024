@@ -2,14 +2,20 @@
 
 namespace App\Days;
 
+use App\Day16\PathState;
 use App\Input;
+use Illuminate\Support\Collection;
 
 class Day16 extends Day {
 
     protected array $map;
+    protected string $start;
     protected string $end;
-    protected array $visited = [];
 
+    protected ?int $goal = null;
+    protected Collection $optimalPaths;
+
+    protected array $visited;
     protected \SplPriorityQueue $queue;
 
     protected const array DIRECTIONS = [
@@ -20,34 +26,64 @@ class Day16 extends Day {
     ];
 
     public function solve1(Input $input) : int {
-        $this->map = $input->asCoordinateKeyedArray();
-        $start = array_search('S', $this->map);
-        $this->end = array_search('E', $this->map);
-
-        $this->queue = new \SplPriorityQueue();
-
-        $this->addToQueue($start, 'E', 0);
+        $this->setUpFromInput($input);
 
         while ($this->queue->valid()) {
-            [$current, $direction, $score] = $this->queue->extract();
+            $current = $this->queue->extract();
 
-            if ($current === $this->end) {
-                return $score;
+            if ($current->location === $this->end) {
+                return $current->score;
             }
 
-            foreach ($this->getNextOptions($current, $direction, $score) as $nextWithScore) {
-                $this->addToQueue(...$nextWithScore);
+            foreach ($this->getNextOptions($current) as $next) {
+                $this->addToQueue($next);
             }
         }
 
         return 0;
     }
 
-    protected function addToQueue($location, $direction, $score) : void {
-        $this->markVisited($location, $direction);
+    public function solve2(Input $input) : int {
+        $this->setUpFromInput($input);
 
-        $priority = $this->getPriority($location, $score);
-        $this->queue->insert([$location, $direction, $score], $priority);
+        while ($this->queue->valid()) {
+            $current = $this->queue->extract();
+
+            if ($current->location === $this->end && (is_null($this->goal) || $current->score <= $this->goal)) {
+                $this->optimalPaths->push($current->path);
+                $this->goal = $current->score;
+                continue;
+            }
+
+            foreach ($this->getNextOptions($current) as $next) {
+                $this->addToQueue($next);
+            }
+        }
+
+        return $this->optimalPaths->flatten()
+            ->map(static fn(string $loc) : string => substr($loc, 0, -1))
+            ->uniqueStrict()
+            ->count();
+    }
+
+    protected function setUpFromInput(Input $input) : void {
+        $this->map = $input->asCoordinateKeyedArray();
+        $this->start = array_search('S', $this->map);
+        $this->end = array_search('E', $this->map);
+
+        $this->visited = [];
+        $this->queue = new \SplPriorityQueue();
+        $this->optimalPaths = collect();
+
+        $current = new PathState($this->start, 'E', 0, [$this->start . 'E']);
+        $this->addToQueue($current);
+    }
+
+    protected function addToQueue(PathState $state) : void {
+        $this->markVisited($state);
+
+        $priority = $this->getPriority($state->location, $state->score);
+        $this->queue->insert($state, $priority);
     }
 
     protected function getPriority(string $location, int $score) : int {
@@ -57,38 +93,58 @@ class Day16 extends Day {
         return -1 * ($score + abs($x - $xEnd) + abs($y - $yEnd));
     }
 
-    protected function getNextOptions(string $location, string $direction, int $score) : array {
-        [$x, $y] = explode('.', $location);
+    protected function getNextOptions(PathState $current) : array {
+        [$x, $y] = explode('.', $current->location);
 
         $options = [];
 
-        foreach (self::DIRECTIONS as $directionOption) {
-            [$nextDirection, $dx, $dy] = $directionOption;
-
-            $nextLocation = $x + $dx . '.' . $y + $dy;
-
-            if (($this->map[$nextLocation] === '.' || $this->map[$nextLocation] === 'E')
-                && !$this->isVisited($nextLocation, $nextDirection)) {
-                $options[] = [
-                    $nextLocation,
-                    $nextDirection,
-                    $score + 1 + ($nextDirection === $direction ? 0 : 1000),
-                ];
+        foreach (self::DIRECTIONS as [$nextDirection, $dx, $dy]) {
+            $nextLocation = ($x + $dx) . '.' . ($y + $dy);
+            if ($this->map[$nextLocation] !== '.' && $this->map[$nextLocation] !== 'E') {
+                continue;
             }
+
+            $nextScore = $current->score + 1 + ($nextDirection === $current->direction ? 0 : 1000);
+
+            $existingScore = $this->getVisitedScore($nextLocation, $nextDirection);
+            if ($existingScore && $existingScore < $nextScore) {
+                continue;
+            }
+
+            $nextPath = $current->path;
+            $nextPath[] = $nextLocation . $nextDirection;
+
+            $options[] = new PathState($nextLocation, $nextDirection, $nextScore, $nextPath);
         }
 
         return $options;
     }
 
-    protected function markVisited($current, $direction) : void {
-        $this->visited[$current . $direction] = true;
+    protected function markVisited(PathState $state) : void {
+        $this->visited[$state->location . $state->direction] = $state->score;
     }
 
-    protected function isVisited($current, $direction) : bool {
-        return isset($this->visited[$current . $direction]);
+    protected function getVisitedScore($location, $direction) : ?int {
+        return $this->visited[$location . $direction] ?? null;
     }
 
-    public function solve2(Input $input) : int {
-        return 0;
+    protected function dumpMap() : void {
+        $map = $this->map;
+
+        foreach ($this->optimalPaths as $path) {
+            foreach ($path as $pos) {
+                $pos = substr($pos, 0, -1);
+                $map[$pos] = 'o';
+            }
+        }
+
+        $print = [];
+        foreach ($map as $pos => $value) {
+            [$x, $y] = explode('.', $pos);
+            $print[$y][$x] = $value;
+        }
+        foreach ($print as $line) {
+            dump(join('', $line));
+        }
     }
 }
