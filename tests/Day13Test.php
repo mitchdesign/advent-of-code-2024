@@ -28,8 +28,8 @@ Prize: X=18641, Y=10279';
 		return 480;
 	}
 
-	function answer2(): int
+	function answer2(): ?int
 	{
-		return 2;
+		return null;
 	}
 }

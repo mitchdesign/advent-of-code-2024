@@ -18,7 +18,7 @@ abstract class Day {
 		return $this->day;
 	}
 
-	public abstract function solve1(Input $input): int;
+	public abstract function solve1(Input $input): mixed;
 
-	public abstract function solve2(Input $input): int;
+	public abstract function solve2(Input $input): mixed;
 }
